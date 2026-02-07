@@ -1,108 +1,340 @@
-@extends('layouts.user')
+<!DOCTYPE html>
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="scroll-smooth">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ config('app.name', 'SiagaBencana Aceh') }} - Literasi Digital Mitigasi Banjir</title>
 
-@section('content')
-    <div class="relative bg-white overflow-hidden">
-        <div class="max-w-7xl mx-auto">
-            <div class="relative z-10 pb-8 bg-white sm:pb-16 md:pb-20 lg:max-w-2xl lg:w-full lg:pb-28 xl:pb-32">
-                <svg class="hidden lg:block absolute right-0 inset-y-0 h-full w-48 text-white transform translate-x-1/2" fill="currentColor" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
-                    <polygon points="50,0 100,0 50,100 0,100" />
-                </svg>
+    <link rel="preconnect" href="https://fonts.bunny.net">
+    <link href="https://fonts.bunny.net/css?family=figtree:300,400,600,700,800,900&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-                <main class="mt-10 mx-auto max-w-7xl px-4 sm:mt-12 sm:px-6 md:mt-16 lg:mt-20 lg:px-8 xl:mt-28">
-                    <div class="sm:text-center lg:text-left">
-                        <h1 class="text-4xl tracking-tight font-extrabold text-gray-900 sm:text-5xl md:text-6xl">
-                            <span class="block xl:inline">Siap Siaga Hadapi</span>
-                            <span class="block text-red-600 xl:inline">Bencana Alam</span>
-                        </h1>
-                        <p class="mt-3 text-base text-gray-500 sm:mt-5 sm:text-lg sm:max-w-xl sm:mx-auto md:mt-5 md:text-xl lg:mx-0">
-                            Edukasi mitigasi bencana yang lengkap, mudah dipahami, dan dapat diakses kapan saja. Lindungi diri dan keluarga Anda dengan pengetahuan yang tepat.
-                        </p>
-                        <div class="mt-5 sm:mt-8 sm:flex sm:justify-center lg:justify-start">
-                            <div class="rounded-md shadow">
-                                <a href="{{ route('content.index') }}" class="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-red-600 hover:bg-red-700 md:py-4 md:text-lg">
-                                    Mulai Belajar
-                                </a>
-                            </div>
-                            <div class="mt-3 sm:mt-0 sm:ml-3">
-                                <a href="#videos" class="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-red-700 bg-red-100 hover:bg-red-200 md:py-4 md:text-lg">
-                                    Tonton Video
-                                </a>
-                            </div>
-                        </div>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    
+    <style>
+        body { font-family: 'Figtree', sans-serif; letter-spacing: -0.01em; }
+
+        /* --- 1. GLASSMORPHISM PREMIUM (Kaca) --- */
+        .glass-premium {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .glass-card:hover {
+            background: rgba(255, 255, 255, 0.9);
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        /* --- 2. BUTTON GLOW --- */
+        .btn-emerald-clean {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.3), inset 0 1px 0 rgba(255,255,255,0.2);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        .btn-emerald-clean:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 35px -5px rgba(16, 185, 129, 0.5);
+            filter: brightness(1.1);
+        }
+
+        /* --- 3. TYPOGRAPHY --- */
+        .hero-title {
+            font-size: clamp(2.5rem, 7vw, 6rem);
+            line-height: 1.1; 
+            letter-spacing: -0.04em;
+            font-weight: 900;
+            text-shadow: 0 10px 40px rgba(0,0,0,0.4);
+        }
+        
+        @media (min-width: 1024px) {
+            .hero-title { line-height: 0.9; }
+        }
+
+        .text-shadow-sm {
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
+
+        /* --- 4. VIDEO OVERLAY --- */
+        .vignette-master {
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 50% 50%, rgba(2,6,23,0.4) 0%, rgba(2,6,23,0.95) 100%);
+            z-index: 2;
+        }
+
+        /* --- 5. SLIDER ANIMATION --- */
+        .slide-item {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: all 1.2s ease-in-out;
+            transform: translateX(30px) scale(0.95);
+        }
+
+        .slide-active {
+            opacity: 1;
+            transform: translateX(0) scale(1);
+            z-index: 10;
+        }
+    </style>
+</head>
+<body class="antialiased bg-slate-50 text-slate-800 overflow-x-hidden selection:bg-emerald-500 selection:text-white">
+    
+    <nav class="fixed w-full z-50 transition-all duration-500 py-4 lg:py-6 top-0" id="mainNav">
+        <div class="max-w-7xl mx-auto px-6 lg:px-10">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-3 lg:space-x-6">
+                    <img src="{{ asset('avatar/logoweb.png') }}" onerror="this.src='https://via.placeholder.com/150?text=LOGO'" alt="Logo" class="h-10 md:h-16 lg:h-20 w-auto drop-shadow-[0_0_15px_rgba(16,185,129,0.4)]">
+                    <div class="hidden sm:block border-l border-white/20 pl-4 md:pl-6">
+                        <h2 class="text-sm md:text-2xl font-black uppercase tracking-tighter text-shadow-sm text-white">SiagaBencana</h2>
+                        <p class="text-[8px] md:text-[9px] font-bold text-emerald-400 uppercase tracking-[0.4em] text-shadow-sm">Aceh Digilitera</p>
                     </div>
-                </main>
+                </div>
+
+                <div class="flex items-center space-x-4 lg:space-x-8">
+                    <a href="{{ route('content.index') }}" class="text-xs md:text-sm font-bold text-white/90 hover:text-emerald-400 transition text-shadow-sm">Pusat Belajar</a>
+                    
+                    <a href="/admin" class="btn-emerald-clean px-5 py-2 md:px-6 md:py-2.5 text-white text-[10px] md:text-xs font-black rounded-full shadow-2xl flex items-center gap-2">
+                        <i class="fas fa-user-shield"></i> Admin Area
+                    </a>
+                </div>
             </div>
         </div>
-        <div class="lg:absolute lg:inset-y-0 lg:right-0 lg:w-1/2 bg-gray-100">
-            <img class="h-56 w-full object-cover sm:h-72 md:h-96 lg:w-full lg:h-full" src="https://images.unsplash.com/photo-1581093583449-ed2521338d12?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" alt="Tim Penyelamat">
+    </nav>
+
+    <section class="relative min-h-screen w-full flex items-center justify-center overflow-hidden bg-slate-900">
+        <div class="absolute inset-0 z-0">
+            <div class="vignette-master"></div>
+            <video id="bgVideo" autoplay muted loop playsinline class="w-full h-full object-cover opacity-60">
+                <source src="{{ asset('storage_videos/hero-bg.mp4') }}" type="video/mp4">
+            </video>
         </div>
-    </div>
 
-    <div class="py-12 bg-gray-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center">
-                <h2 class="text-base text-red-600 font-semibold tracking-wide uppercase">Materi Pembelajaran</h2>
-                <p class="mt-2 text-3xl leading-8 font-extrabold tracking-tight text-gray-900 sm:text-4xl">
-                    Pilih Fase Bencana
-                </p>
-                <p class="mt-4 max-w-2xl text-xl text-gray-500 lg:mx-auto">
-                    Pelajari langkah-langkah yang harus dilakukan sebelum, saat, dan sesudah bencana terjadi.
-                </p>
-            </div>
-
-            <div class="mt-10">
-                <div class="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
-                    @foreach($categories as $category)
-                        <a href="{{ route('content.topic', $category->slug) }}" class="group relative bg-white p-6 rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-100">
-                            <div class="flex items-center justify-center h-12 w-12 rounded-md bg-red-500 text-white mb-4 group-hover:scale-110 transition-transform">
-                                <i class="{{ $category->icon ?? 'fas fa-book' }} text-xl"></i>
-                            </div>
-                            <h3 class="text-lg font-medium text-gray-900 group-hover:text-red-600">
-                                {{ $category->name }}
-                            </h3>
-                            <p class="mt-2 text-base text-gray-500">
-                                {{ $category->description ?? 'Pelajari panduan lengkap di kategori ini.' }}
-                            </p>
+        <div class="max-w-7xl mx-auto px-6 lg:px-10 relative z-10 w-full pt-24 lg:pt-0">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
+                
+                <div class="text-center lg:text-left order-1">
+                    <div class="inline-flex items-center space-x-3 px-4 py-1.5 rounded-full glass-premium border-white/10 text-emerald-400 text-[10px] font-black uppercase tracking-[0.3em] mb-6 md:mb-10 backdrop-blur-md">
+                        <span class="h-2 w-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_10px_#10b981]"></span>
+                        <span>Literasi Digital Aceh</span>
+                    </div>
+                    
+                    <h1 class="hero-title text-white mb-6 leading-tight">
+                        Budaya<br>
+                        <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400 drop-shadow-lg">Siaga.</span>
+                    </h1>
+                    
+                    <p class="text-base md:text-xl lg:text-2xl text-slate-200/90 leading-relaxed mb-10 max-w-lg mx-auto lg:mx-0 font-medium text-shadow-sm">
+                        Membangun ketangguhan masyarakat Aceh melalui <span class="text-white font-bold border-b-2 border-emerald-500/50">Edukasi Digital</span> berbasis kearifan lokal yang presisi.
+                    </p>
+                    
+                    <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+                        <a href="{{ route('content.index') }}" class="btn-emerald-clean px-8 py-4 text-white text-sm md:text-lg font-black rounded-2xl w-full sm:w-auto text-center">
+                            Mulai Belajar
                         </a>
-                    @endforeach
+                        <a href="#materi" class="glass-premium px-8 py-4 text-white text-sm md:text-lg font-bold rounded-2xl hover:bg-white/10 transition-all border border-white/10 w-full sm:w-auto text-center">
+                            Lihat Materi
+                        </a>
+                    </div>
+                </div>
+
+                <div class="hidden lg:flex relative h-[600px] lg:h-[700px] w-full pointer-events-none order-2 items-center justify-center">
+                    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] bg-emerald-500/20 rounded-full blur-[100px] animate-pulse"></div>
+
+                    <div class="slide-item slide-active">
+                        <img src="{{ asset('avatar/slide1.png') }}" class="max-h-full w-auto object-contain drop-shadow-[0_20px_50px_rgba(0,0,0,0.6)]">
+                    </div>
+                    <div class="slide-item">
+                        <img src="{{ asset('avatar/slide2.png') }}" class="max-h-full w-auto object-contain drop-shadow-[0_20px_50px_rgba(0,0,0,0.6)]">
+                    </div>
+                    <div class="slide-item">
+                        <img src="{{ asset('avatar/slide3.png') }}" class="max-h-full w-auto object-contain drop-shadow-[0_20px_50px_rgba(0,0,0,0.6)]">
+                    </div>
+                    <div class="slide-item">
+                        <img src="{{ asset('avatar/slide4.png') }}" class="max-h-full w-auto object-contain drop-shadow-[0_20px_50px_rgba(0,0,0,0.6)]">
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
+        
+        <div class="absolute bottom-10 left-1/2 transform -translate-x-1/2 animate-bounce hidden lg:block z-20">
+            <a href="#tentang" class="text-white/50 hover:text-white transition">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path></svg>
+            </a>
+        </div>
+    </section>
 
-    <div id="videos" class="py-12 bg-white">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-end mb-8">
-                <div>
-                    <h2 class="text-3xl font-extrabold text-gray-900">Video Edukasi Pilihan</h2>
-                    <p class="mt-2 text-gray-500">Tonton panduan visual agar lebih mudah dipahami.</p>
+    <section id="tentang" class="py-20 md:py-32 bg-white text-slate-950 relative z-30 rounded-t-[2.5rem] md:rounded-t-[5rem] -mt-10 lg:-mt-20 shadow-[0_-20px_60px_rgba(0,0,0,0.5)]">
+        <div class="max-w-7xl mx-auto px-6 lg:px-10">
+            <div class="flex flex-col lg:flex-row justify-between items-end mb-16 gap-6">
+                <div class="max-w-3xl text-center lg:text-left mx-auto lg:mx-0">
+                    <h2 class="text-4xl md:text-6xl lg:text-7xl font-black tracking-tighter leading-[0.9] mb-6 uppercase">
+                        Fokus Utama<br><span class="text-emerald-600">Literasi Kami.</span>
+                    </h2>
+                    <p class="text-lg md:text-2xl text-slate-500 font-light max-w-xl mx-auto lg:mx-0">Strategi tepat sasaran untuk mewujudkan Aceh yang lebih tangguh menghadapi bencana.</p>
                 </div>
-                <a href="{{ route('content.index') }}" class="text-red-600 hover:text-red-700 font-medium">Lihat Semua &rarr;</a>
+                <div class="hidden lg:block h-2 w-32 bg-emerald-500 rounded-full mb-4"></div>
             </div>
 
-            <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
+                <div class="glass-card p-8 md:p-12 rounded-[2rem] border border-slate-100 group">
+                    <div class="w-16 h-16 bg-emerald-500 text-white rounded-3xl flex items-center justify-center mb-6 shadow-lg shadow-emerald-500/30 group-hover:rotate-6 transition-transform">
+                        <i class="fas fa-laptop-code text-2xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-black mb-3 tracking-tight text-slate-800">Edukasi Digital</h3>
+                    <p class="text-base text-slate-500 leading-relaxed">Modul pembelajaran berbasis video dan interaksi untuk semua usia, mudah diakses di mana saja.</p>
+                </div>
+
+                <div class="glass-card p-8 md:p-12 rounded-[2rem] border border-slate-100 group">
+                    <div class="w-16 h-16 bg-blue-600 text-white rounded-3xl flex items-center justify-center mb-6 shadow-lg shadow-blue-500/30 group-hover:rotate-6 transition-transform">
+                        <i class="fas fa-mosque text-2xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-black mb-3 tracking-tight text-slate-800">Kearifan Lokal</h3>
+                    <p class="text-base text-slate-500 leading-relaxed">Penyelamatan aset budaya dan pendekatan mitigasi berbasis nilai-nilai ke-Aceh-an.</p>
+                </div>
+
+                <div class="glass-card p-8 md:p-12 rounded-[2rem] border border-slate-100 group">
+                    <div class="w-16 h-16 bg-rose-600 text-white rounded-3xl flex items-center justify-center mb-6 shadow-lg shadow-rose-500/30 group-hover:rotate-6 transition-transform">
+                        <i class="fas fa-hands-helping text-2xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-black mb-3 tracking-tight text-slate-800">Cepat Tanggap</h3>
+                    <p class="text-base text-slate-500 leading-relaxed">Materi praktis yang mempersiapkan Anda bertindak cepat dan tepat saat sirine berbunyi.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="materi" class="py-16 bg-slate-50">
+        <div class="max-w-7xl mx-auto px-6 lg:px-10">
+            <div class="flex flex-col md:flex-row justify-between items-end mb-12">
+                <div>
+                    <h2 class="text-3xl font-black text-slate-900 uppercase tracking-tight">Pilih Kategori</h2>
+                    <p class="text-slate-500 mt-2">Pelajari mitigasi berdasarkan jenis ancaman.</p>
+                </div>
+                <a href="{{ route('content.index') }}" class="text-emerald-600 font-bold hover:text-emerald-700 mt-4 md:mt-0">Lihat Semua &rarr;</a>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                @foreach($categories as $category)
+                    <a href="{{ route('content.topic', ['category' => $category->slug]) }}" class="group relative bg-white p-6 rounded-3xl shadow-sm hover:shadow-xl transition-all duration-300 border border-slate-100 hover:-translate-y-1">
+                        <div class="flex items-center justify-center h-14 w-14 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white mb-6 group-hover:scale-110 transition-transform shadow-lg shadow-emerald-200">
+                            @if($category->icon)
+                                <img src="{{ \Illuminate\Support\Facades\Storage::url($category->icon) }}" class="h-8 w-8 object-contain filter brightness-0 invert">
+                            @else
+                                <i class="fas fa-shield-alt text-2xl"></i>
+                            @endif
+                        </div>
+                        <h3 class="text-xl font-bold text-slate-900 group-hover:text-emerald-600 transition">
+                            {{ $category->name }}
+                        </h3>
+                        <p class="mt-3 text-sm text-slate-500 line-clamp-2">
+                            {{ $category->description ?? 'Panduan lengkap keselamatan dan mitigasi.' }}
+                        </p>
+                    </a>
+                @endforeach
+            </div>
+        </div>
+    </section>
+
+    <div class="py-16 bg-white">
+        <div class="max-w-7xl mx-auto px-6 lg:px-10">
+            <div class="mb-12">
+                <h2 class="text-3xl font-black text-slate-900 uppercase tracking-tight">Video Pilihan</h2>
+                <p class="text-slate-500 mt-2">Tonton panduan visual agar lebih mudah dipahami.</p>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
                 @foreach($featuredVideos as $video)
-                    <div class="flex flex-col rounded-lg shadow-lg overflow-hidden border border-gray-100">
-                        <div class="flex-shrink-0 relative">
-                            <img class="h-48 w-full object-cover" src="https://img.youtube.com/vi/{{ $video->youtube_id }}/mqdefault.jpg" alt="{{ $video->title }}">
-                            <a href="{{ route('content.video', $video->slug) }}" class="absolute inset-0 flex items-center justify-center bg-black bg-opacity-30 opacity-0 hover:opacity-100 transition-opacity duration-300">
-                                <i class="fas fa-play-circle text-6xl text-white"></i>
+                    <div class="group relative bg-white rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 border border-slate-100">
+                        <div class="relative aspect-video bg-slate-200 overflow-hidden">
+                            @php
+                                $thumbnail = null;
+                                if ($video->thumbnail) {
+                                    $thumbnail = \Illuminate\Support\Facades\Storage::url($video->thumbnail);
+                                } elseif ($video->url) {
+                                    $url = $video->url;
+                                    parse_str(parse_url($url, PHP_URL_QUERY), $params);
+                                    $youtubeId = $params['v'] ?? null;
+                                    if(!$youtubeId && strpos($url, 'youtu.be') !== false) {
+                                         $youtubeId = substr(parse_url($url, PHP_URL_PATH), 1);
+                                    }
+                                    if($youtubeId) {
+                                        $thumbnail = "https://img.youtube.com/vi/{$youtubeId}/mqdefault.jpg";
+                                    }
+                                }
+                            @endphp
+                            <img src="{{ $thumbnail ?? 'https://via.placeholder.com/640x360?text=Video+Edukasi' }}" 
+                                 class="w-full h-full object-cover transform group-hover:scale-105 transition duration-700" 
+                                 alt="{{ $video->title }}">
+                            
+                            <a href="{{ route('content.video', $video->slug) }}" class="absolute inset-0 flex items-center justify-center bg-black/30 group-hover:bg-black/50 transition-all">
+                                <div class="w-14 h-14 bg-white/90 rounded-full flex items-center justify-center shadow-lg transform scale-90 group-hover:scale-110 transition duration-300">
+                                    <i class="fas fa-play text-emerald-600 text-xl ml-1"></i>
+                                </div>
                             </a>
                         </div>
-                        <div class="flex-1 bg-white p-6 flex flex-col justify-between">
-                            <div class="flex-1">
-                                <p class="text-sm font-medium text-red-600">
-                                    {{ $video->topic->name ?? 'Umum' }}
-                                </p>
-                                <a href="{{ route('content.video', $video->slug) }}" class="block mt-2">
-                                    <p class="text-xl font-semibold text-gray-900 hover:text-red-600 transition-colors">{{ $video->title }}</p>
-                                    <p class="mt-3 text-base text-gray-500 line-clamp-2">
-                                        {{ $video->description }}
-                                    </p>
-                                </a>
+                        <div class="p-6">
+                            <span class="inline-block px-3 py-1 bg-emerald-50 text-emerald-700 text-xs font-bold rounded-full mb-3">
+                                {{ $video->topic->category->name ?? 'Edukasi' }}
+                            </span>
+                            <h3 class="text-lg font-bold text-slate-900 leading-snug hover:text-emerald-600 transition line-clamp-2">
+                                <a href="{{ route('content.video', $video->slug) }}">{{ $video->title }}</a>
+                            </h3>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        </div>
+    </div>
+
+    @if(isset($featuredModules) && $featuredModules->count() > 0)
+    <div class="py-16 bg-slate-50 border-t border-slate-200">
+        <div class="max-w-7xl mx-auto px-6 lg:px-10">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-black text-slate-900 uppercase tracking-tight">Buku Saku</h2>
+                <p class="text-slate-500 mt-2">Unduh panduan resmi untuk dibaca kapan saja.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                @foreach($featuredModules as $module)
+                    <div class="flex bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition border border-slate-100 group">
+                        <div class="w-1/3 bg-slate-200 relative">
+                             @if($module->cover_image)
+                                <img src="{{ \Illuminate\Support\Facades\Storage::url($module->cover_image) }}" class="absolute inset-0 w-full h-full object-cover grayscale group-hover:grayscale-0 transition duration-500">
+                             @else
+                                <div class="absolute inset-0 flex items-center justify-center bg-emerald-50 text-emerald-400">
+                                    <i class="fas fa-book text-3xl"></i>
+                                </div>
+                             @endif
+                        </div>
+                        <div class="w-2/3 p-5 flex flex-col justify-between">
+                            <div>
+                                <h4 class="font-bold text-slate-900 leading-snug group-hover:text-emerald-600 transition line-clamp-2">
+                                    <a href="{{ route('content.module', $module->slug) }}">{{ $module->title }}</a>
+                                </h4>
+                                <p class="text-xs text-slate-500 mt-1">{{ $module->topic->name }}</p>
                             </div>
-                            <div class="mt-4 flex items-center text-sm text-gray-500">
-                                <i class="far fa-clock mr-1.5"></i> {{ $video->duration }} menit
+                            <div class="mt-4">
+                                <a href="{{ route('content.module', $module->slug) }}" class="text-sm font-bold text-emerald-600 hover:text-emerald-800 flex items-center">
+                                    Baca Sekarang <i class="fas fa-chevron-right ml-1 text-xs"></i>
+                                </a>
                             </div>
                         </div>
                     </div>
@@ -110,4 +342,66 @@
             </div>
         </div>
     </div>
-@endsection
+    @endif
+
+    <footer class="py-16 bg-white border-t border-slate-100 text-center">
+        <div class="max-w-7xl mx-auto px-6">
+            <img src="{{ asset('avatar/logoweb.png') }}" onerror="this.style.display='none'" alt="Logo" class="h-10 md:h-16 w-auto mx-auto mb-8 grayscale opacity-30 hover:opacity-100 transition-all duration-700 cursor-pointer">
+            <div class="flex flex-wrap justify-center gap-6 md:gap-10 mb-8 text-xs md:text-sm font-bold text-slate-400 uppercase tracking-widest">
+                <a href="#" class="hover:text-emerald-500 transition">Beranda</a>
+                <a href="#tentang" class="hover:text-emerald-500 transition">Tentang</a>
+                <a href="{{ route('content.index') }}" class="hover:text-emerald-500 transition">Materi</a>
+                <a href="/admin" class="hover:text-emerald-500 transition">Admin</a>
+            </div>
+            <p class="text-slate-400 text-[10px] md:text-xs font-bold uppercase tracking-[0.3em]">
+                &copy; {{ date('Y') }} {{ config('app.name') }}. Program Mahasiswa Berdampak Aceh.
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        // --- 1. Navbar Scroll Styling ---
+        const nav = document.getElementById('mainNav');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                nav.classList.add('glass-premium', 'py-3', 'shadow-2xl');
+                nav.classList.remove('py-4', 'lg:py-6');
+            } else {
+                nav.classList.remove('glass-premium', 'py-3', 'shadow-2xl');
+                nav.classList.add('py-4', 'lg:py-6');
+            }
+        });
+
+        // --- 2. Slider (Otomatis Stop di HP karena hidden) ---
+        let current = 0;
+        const items = document.querySelectorAll('.slide-item');
+        
+        function rotate() {
+            // Cek apakah slider visible (Desktop only)
+            if(items.length > 0 && window.innerWidth >= 1024) { 
+                items[current].classList.remove('slide-active');
+                current = (current + 1) % items.length;
+                items[current].classList.add('slide-active');
+            }
+        }
+        setInterval(rotate, 5000);
+
+        // --- 3. iOS Video Autoplay Fix ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const video = document.getElementById('bgVideo');
+            const forcePlay = () => {
+                if (video && video.paused) {
+                    video.play().then(() => removeListeners()).catch(e => console.log("Waiting interaction..."));
+                }
+            };
+            const removeListeners = () => {
+                document.removeEventListener('touchstart', forcePlay);
+                document.removeEventListener('click', forcePlay);
+            };
+            forcePlay();
+            document.addEventListener('touchstart', forcePlay, { passive: true });
+            document.addEventListener('click', forcePlay);
+        });
+    </script>
+</body>
+</html>

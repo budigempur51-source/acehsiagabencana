@@ -15,10 +15,21 @@ class UserContentController extends Controller
      */
     public function home()
     {
-        // Ambil data untuk ditampilkan di homepage
-        $categories = Category::where('is_active', true)->take(3)->get();
-        $featuredVideos = Video::where('is_featured', true)->latest()->take(3)->get();
-        $featuredModules = LearningModule::where('is_featured', true)->latest()->take(3)->get();
+        $categories = Category::where('is_active', true)->take(4)->get();
+        
+        // Ambil video unggulan
+        $featuredVideos = Video::where('is_featured', true)
+            ->with(['topic.category']) // Eager load untuk performa
+            ->latest()
+            ->take(3)
+            ->get();
+
+        // Ambil modul unggulan
+        $featuredModules = LearningModule::where('is_featured', true)
+            ->with(['topic.category'])
+            ->latest()
+            ->take(3)
+            ->get();
 
         return view('welcome', compact('categories', 'featuredVideos', 'featuredModules'));
     }
@@ -29,39 +40,40 @@ class UserContentController extends Controller
     public function index()
     {
         $categories = Category::where('is_active', true)
-            ->withCount('topics') // Hitung jumlah topik
+            ->withCount('topics')
             ->get();
 
         return view('user.index', compact('categories'));
     }
 
     /**
-     * Halaman Detail Topik (Isi Materi)
+     * Halaman Detail Topik (Core Page)
+     * Menangani logika tampilan materi dan sidebar topik.
      */
     public function topic(Category $category, Topic $topic = null)
     {
-        // Jika user hanya akses /belajar/pra-bencana (tanpa topik), 
-        // kita arahkan ke topik pertama di kategori itu atau tampilkan list topik.
-        
-        // Load topik-topik dalam kategori ini
+        // 1. Load semua topik dalam kategori ini untuk Sidebar Navigasi
         $category->load(['topics' => function($q) {
-            $q->withCount(['videos', 'learningModules']);
+            $q->orderBy('name', 'asc'); // Urutkan topik A-Z atau sesuai kebutuhan
         }]);
 
-        // Jika topik tidak dipilih di URL, ambil topik pertama
+        // 2. Logika Penentuan Topik Aktif
+        // Jika di URL tidak ada topik, ambil topik pertama dari kategori tersebut
         if (!$topic) {
             $topic = $category->topics->first();
         }
 
-        // Jika masih tidak ada topik (kategori kosong), handle error/empty state
-        if (!$topic) {
-            return redirect()->route('content.index')->with('error', 'Belum ada materi di kategori ini.');
+        // 3. Siapkan Data Materi (Video & Modul)
+        $videos = collect();
+        $modules = collect();
+
+        // Hanya query materi jika topik DITEMUKAN (tidak null)
+        if ($topic) {
+            $videos = $topic->videos()->latest()->get();
+            $modules = $topic->learningModules()->latest()->get();
         }
 
-        // Ambil Video & Modul milik Topik yang dipilih
-        $videos = $topic->videos()->latest()->get();
-        $modules = $topic->learningModules()->latest()->get();
-
+        // Kita tidak melempar redirect jika kosong, tapi biarkan View menangani Empty State.
         return view('user.topic', compact('category', 'topic', 'videos', 'modules'));
     }
 
@@ -70,12 +82,12 @@ class UserContentController extends Controller
      */
     public function video(Video $video)
     {
-        // Load relasi untuk breadcrumb navigasi (Video -> Topik -> Kategori)
         $video->load('topic.category');
         
-        // Rekomendasi video lain di topik yang sama
+        // Rekomendasi: Video lain dalam topik yang sama
         $relatedVideos = Video::where('topic_id', $video->topic_id)
             ->where('id', '!=', $video->id)
+            ->latest()
             ->take(4)
             ->get();
 

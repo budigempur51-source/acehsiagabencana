@@ -39,7 +39,6 @@ class LearningModuleResource extends Resource
                     ->schema([
                         Forms\Components\Section::make('Detail Dokumen')
                             ->schema([
-                                // LOGIC: Dependent Select (Sama seperti Video)
                                 Forms\Components\Select::make('category_id')
                                     ->label('Pilih Kategori')
                                     ->options(Category::query()->where('is_active', true)->pluck('name', 'id'))
@@ -82,14 +81,15 @@ class LearningModuleResource extends Resource
                             ->schema([
                                 Forms\Components\FileUpload::make('file_path')
                                     ->label('Upload File PDF')
+                                    ->disk('public') // <--- WAJIB: Paksa simpan di Public Disk
                                     ->directory('modules/files')
-                                    ->acceptedFileTypes(['application/pdf']) // Hanya PDF
-                                    ->maxSize(10240) // Max 10MB
+                                    ->acceptedFileTypes(['application/pdf'])
+                                    ->maxSize(20480) // 20MB Max
                                     ->required()
                                     ->downloadable()
                                     ->openable()
                                     ->columnSpanFull()
-                                    ->helperText('Format wajib PDF. Maksimal ukuran 10MB.'),
+                                    ->helperText('Format wajib PDF. Maksimal ukuran 20MB.'),
                             ]),
                     ])
                     ->columnSpan(['lg' => 2]),
@@ -101,15 +101,14 @@ class LearningModuleResource extends Resource
                                 Forms\Components\FileUpload::make('cover_image')
                                     ->label('Cover Buku')
                                     ->image()
+                                    ->disk('public') // <--- WAJIB: Paksa simpan di Public Disk
                                     ->directory('modules/covers')
                                     ->imageEditor(),
 
                                 Forms\Components\Toggle::make('is_featured')
                                     ->label('Rekomendasi?')
-                                    ->helperText('Tampilkan di beranda sebagai modul pilihan.')
                                     ->onColor('success'),
                                 
-                                // Field hidden untuk default value (jika database butuh)
                                 Forms\Components\Hidden::make('file_type')->default('pdf'),
                                 Forms\Components\Hidden::make('file_size')->default(0),
                             ]),
@@ -125,31 +124,23 @@ class LearningModuleResource extends Resource
             ->columns([
                 Tables\Columns\ImageColumn::make('cover_image')
                     ->label('Cover')
-                    ->height(80) // Lebih tinggi biar seperti buku
+                    ->disk('public') // <--- WAJIB
+                    ->height(80)
                     ->defaultImageUrl(url('/images/placeholder-book.png')),
 
                 Tables\Columns\TextColumn::make('title')
                     ->label('Judul Modul')
                     ->searchable()
-                    ->weight('bold')
-                    ->description(fn (LearningModule $record): string => Str::limit(strip_tags($record->description), 40)),
+                    ->weight('bold'),
 
                 Tables\Columns\TextColumn::make('topic.name')
                     ->label('Topik')
                     ->badge()
-                    ->color('info')
-                    ->sortable(),
+                    ->color('info'),
 
                 Tables\Columns\IconColumn::make('is_featured')
                     ->label('Featured')
-                    ->boolean()
-                    ->trueColor('success')
-                    ->falseColor('gray'),
-
-                Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->boolean(),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('topic_id')
