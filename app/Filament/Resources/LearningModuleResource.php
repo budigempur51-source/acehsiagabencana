@@ -4,103 +4,135 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\LearningModuleResource\Pages;
 use App\Models\LearningModule;
+use App\Models\Topic;
+use App\Models\Category;
 use Filament\Forms;
 use Filament\Forms\Form;
-use Filament\Forms\Set;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Str;
+use Filament\Forms\Get;
+use Filament\Forms\Set;
+use Illuminate\Support\Collection;
 
 class LearningModuleResource extends Resource
 {
     protected static ?string $model = LearningModule::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-book-open'; // Icon Buku
-    protected static ?string $navigationGroup = 'Content Management';
+    protected static ?string $navigationIcon = 'heroicon-o-document-text';
+    protected static ?string $navigationGroup = 'Manajemen Konten';
+    protected static ?string $navigationLabel = 'Modul E-Book';
     protected static ?int $navigationSort = 4;
+
+    public static function getNavigationBadge(): ?string
+    {
+        return static::getModel()::count();
+    }
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                // --- KOLOM KIRI (INFORMASI UTAMA) ---
                 Forms\Components\Group::make()
                     ->schema([
-                        Forms\Components\Section::make('Detail Modul')
+                        Forms\Components\Section::make('Detail Dokumen')
                             ->schema([
+                                // LOGIC: Dependent Select (Sama seperti Video)
+                                Forms\Components\Select::make('category_id')
+                                    ->label('Pilih Kategori')
+                                    ->options(Category::query()->where('is_active', true)->pluck('name', 'id'))
+                                    ->live()
+                                    ->afterStateUpdated(fn (Set $set) => $set('topic_id', null))
+                                    ->dehydrated(false),
+
                                 Forms\Components\Select::make('topic_id')
-                                    ->label('Topik Bencana')
-                                    ->relationship('topic', 'name')
+                                    ->label('Topik Modul')
+                                    ->options(fn (Get $get): Collection => Topic::query()
+                                        ->where('category_id', $get('category_id'))
+                                        ->pluck('name', 'id'))
                                     ->searchable()
                                     ->preload()
-                                    ->required(),
+                                    ->required()
+                                    ->relationship('topic', 'name'),
 
                                 Forms\Components\TextInput::make('title')
-                                    ->label('Judul Modul')
+                                    ->label('Judul Modul / Buku')
                                     ->required()
                                     ->maxLength(255)
                                     ->live(onBlur: true)
-                                    ->afterStateUpdated(fn (Set $set, ?string $state) => $set('slug', Str::slug($state))),
+                                    ->afterStateUpdated(fn (string $operation, $state, $set) => 
+                                        $operation === 'create' ? $set('slug', Str::slug($state)) : null
+                                    ),
 
                                 Forms\Components\TextInput::make('slug')
+                                    ->disabled()
+                                    ->dehydrated()
                                     ->required()
-                                    ->readOnly()
-                                    ->maxLength(255),
+                                    ->unique(ignoreRecord: true),
 
-                                Forms\Components\Textarea::make('description')
+                                Forms\Components\RichEditor::make('description')
                                     ->label('Ringkasan Isi')
-                                    ->rows(5)
+                                    ->toolbarButtons(['bold', 'italic', 'bulletList'])
                                     ->columnSpanFull(),
-                            ]),
-                    ])->columnSpan(2),
+                            ])->columns(2),
 
-                // --- KOLOM KANAN (UPLOAD & STATUS) ---
+                        Forms\Components\Section::make('File Dokumen')
+                            ->schema([
+                                Forms\Components\FileUpload::make('file_path')
+                                    ->label('Upload File PDF')
+                                    ->directory('modules/files')
+                                    ->acceptedFileTypes(['application/pdf']) // Hanya PDF
+                                    ->maxSize(10240) // Max 10MB
+                                    ->required()
+                                    ->downloadable()
+                                    ->openable()
+                                    ->columnSpanFull()
+                                    ->helperText('Format wajib PDF. Maksimal ukuran 10MB.'),
+                            ]),
+                    ])
+                    ->columnSpan(['lg' => 2]),
+
                 Forms\Components\Group::make()
                     ->schema([
-                        Forms\Components\Section::make('File & Media')
+                        Forms\Components\Section::make('Cover & Status')
                             ->schema([
-                                // Upload Cover Gambar
                                 Forms\Components\FileUpload::make('cover_image')
                                     ->label('Cover Buku')
-                                    ->image() // Hanya gambar
-                                    ->directory('module-covers')
-                                    ->maxSize(2048), // Max 2MB
-
-                                // Upload File PDF
-                                Forms\Components\FileUpload::make('file_path')
-                                    ->label('File Dokumen (PDF)')
-                                    ->acceptedFileTypes(['application/pdf']) // Wajib PDF
-                                    ->directory('learning-modules')
-                                    ->required()
-                                    ->maxSize(20480) // Max 20MB
-                                    ->downloadable() // Admin bisa download lagi buat ngecek
-                                    ->helperText('Format PDF. Maksimal 20MB.'),
+                                    ->image()
+                                    ->directory('modules/covers')
+                                    ->imageEditor(),
 
                                 Forms\Components\Toggle::make('is_featured')
-                                    ->label('Rekomendasi Utama')
-                                    ->default(false)
+                                    ->label('Rekomendasi?')
+                                    ->helperText('Tampilkan di beranda sebagai modul pilihan.')
                                     ->onColor('success'),
+                                
+                                // Field hidden untuk default value (jika database butuh)
+                                Forms\Components\Hidden::make('file_type')->default('pdf'),
+                                Forms\Components\Hidden::make('file_size')->default(0),
                             ]),
-                    ])->columnSpan(1),
-            ])->columns(3);
+                    ])
+                    ->columnSpan(['lg' => 1]),
+            ])
+            ->columns(3);
     }
 
     public static function table(Table $table): Table
     {
         return $table
             ->columns([
-                // Tampilkan Cover Kecil
                 Tables\Columns\ImageColumn::make('cover_image')
                     ->label('Cover')
-                    ->height(60),
+                    ->height(80) // Lebih tinggi biar seperti buku
+                    ->defaultImageUrl(url('/images/placeholder-book.png')),
 
                 Tables\Columns\TextColumn::make('title')
                     ->label('Judul Modul')
                     ->searchable()
-                    ->sortable()
                     ->weight('bold')
-                    ->limit(40),
+                    ->description(fn (LearningModule $record): string => Str::limit(strip_tags($record->description), 40)),
 
                 Tables\Columns\TextColumn::make('topic.name')
                     ->label('Topik')
@@ -108,17 +140,11 @@ class LearningModuleResource extends Resource
                     ->color('info')
                     ->sortable(),
 
-                // Indikator File Ada/Tidak
-                Tables\Columns\IconColumn::make('file_path')
-                    ->label('PDF')
-                    ->boolean()
-                    ->trueIcon('heroicon-o-document-check')
-                    ->falseIcon('heroicon-o-x-circle')
-                    ->color(fn ($state) => $state ? 'success' : 'danger'),
-
                 Tables\Columns\IconColumn::make('is_featured')
                     ->label('Featured')
-                    ->boolean(),
+                    ->boolean()
+                    ->trueColor('success')
+                    ->falseColor('gray'),
 
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
@@ -126,18 +152,18 @@ class LearningModuleResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                Tables\Filters\SelectFilter::make('topic')
+                Tables\Filters\SelectFilter::make('topic_id')
                     ->relationship('topic', 'name')
                     ->label('Filter Topik'),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
-                // Tombol Download langsung di Tabel
                 Tables\Actions\Action::make('download')
+                    ->label('Download')
                     ->icon('heroicon-o-arrow-down-tray')
                     ->url(fn (LearningModule $record) => \Illuminate\Support\Facades\Storage::url($record->file_path))
                     ->openUrlInNewTab(),
+                Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -148,9 +174,7 @@ class LearningModuleResource extends Resource
 
     public static function getRelations(): array
     {
-        return [
-            //
-        ];
+        return [];
     }
 
     public static function getPages(): array
