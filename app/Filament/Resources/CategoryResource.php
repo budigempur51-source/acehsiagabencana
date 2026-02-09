@@ -92,14 +92,15 @@ class CategoryResource extends Resource
                 Tables\Columns\ImageColumn::make('icon')
                     ->label('Ikon')
                     ->circular()
-                    ->defaultImageUrl(url('/images/placeholder.png')), // Fallback image jika perlu
+                    ->defaultImageUrl(url('/images/placeholder.png')),
 
                 Tables\Columns\TextColumn::make('name')
                     ->label('Nama Kategori')
                     ->searchable()
                     ->sortable()
                     ->weight('bold')
-                    ->description(fn (Category $record): string => Str::limit($record->description, 30)),
+                    // FIX: Menggunakan ?? '' untuk mencegah error return null pada type hint string
+                    ->description(fn (Category $record): string => Str::limit($record->description ?? '', 30)),
 
                 Tables\Columns\TextColumn::make('slug')
                     ->label('Slug')
@@ -123,6 +124,7 @@ class CategoryResource extends Resource
 
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
+                    ->label('Dibuat Pada')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
