@@ -19,6 +19,15 @@ class Category extends Model
     ];
 
     /**
+     * PENTING: Agar Route Model Binding membaca SLUG, bukan ID.
+     * Ini yang memperbaiki error 404 saat membuka Kategori.
+     */
+    public function getRouteKeyName()
+    {
+        return 'slug';
+    }
+
+    /**
      * Relasi: Satu Kategori punya banyak Topik.
      */
     public function topics(): HasMany

@@ -1,83 +1,72 @@
-<nav class="bg-white border-b border-gray-100 sticky top-0 z-50">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between h-16">
-            <div class="flex">
-                <div class="shrink-0 flex items-center">
-                    <a href="{{ route('home') }}" class="flex items-center gap-2">
-                        <div class="w-8 h-8 bg-red-600 rounded-lg flex items-center justify-center text-white font-bold">
-                            <i class="fas fa-shield-heart"></i>
-                        </div>
-                        <span class="font-bold text-xl text-gray-800 tracking-tight">Siaga<span class="text-red-600">Bencana</span></span>
-                    </a>
+<nav x-data="{ mobileMenuOpen: false }" class="fixed w-full z-50 transition-all duration-300 bg-white/90 backdrop-blur-md border-b border-emerald-100 shadow-sm h-24">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full">
+        <div class="flex justify-between items-center h-full">
+            
+            <div class="flex items-center gap-3">
+                <div class="relative w-12 h-12 flex-shrink-0">
+                    <img src="{{ asset('avatar/logoweb.png') }}" 
+                         alt="Logo" 
+                         class="w-full h-full object-contain drop-shadow-md"
+                         onerror="this.style.display='none'; document.getElementById('backup-icon').style.display='flex';">
+                    
+                    <div id="backup-icon" class="hidden w-full h-full items-center justify-center bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl shadow-lg">
+                        <i class="fas fa-shield-heart text-white text-xl"></i>
+                    </div>
                 </div>
                 
-                <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
-                    <a href="{{ route('home') }}" class="inline-flex items-center px-1 pt-1 border-b-2 {{ request()->routeIs('home') ? 'border-red-500 text-gray-900' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' }} text-sm font-medium leading-5 transition duration-150 ease-in-out">
-                        Beranda
-                    </a>
-                    <a href="{{ route('content.index') }}" class="inline-flex items-center px-1 pt-1 border-b-2 {{ request()->routeIs('content.*') ? 'border-red-500 text-gray-900' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' }} text-sm font-medium leading-5 transition duration-150 ease-in-out">
+                <div class="flex flex-col justify-center">
+                    <span class="font-black text-2xl text-slate-800 tracking-tight leading-none">
+                        Siaga<span class="text-emerald-500">Bencana</span>
+                    </span>
+                    <span class="text-[0.65rem] text-slate-400 uppercase tracking-[0.3em] font-bold mt-1">
                         Pusat Belajar
-                    </a>
+                    </span>
                 </div>
             </div>
 
-            <div class="hidden sm:flex sm:items-center sm:ml-6">
+            <div class="hidden sm:flex sm:items-center sm:space-x-4">
+                <a href="{{ route('home') }}" 
+                   class="px-5 py-2.5 text-sm font-bold text-slate-500 hover:text-emerald-600 transition-colors rounded-xl hover:bg-emerald-50">
+                    Beranda
+                </a>
+                
+                <div class="px-5 py-2.5 text-sm font-bold text-emerald-700 bg-emerald-100/50 rounded-xl border border-emerald-100">
+                    Pusat Belajar
+                </div>
+                
                 @auth
-                    <a href="{{ url('/admin') }}" class="text-sm font-medium text-gray-500 hover:text-gray-900 mr-4">
-                        Dashboard
-                    </a>
-                    <form method="POST" action="{{ route('logout') }}">
-                        @csrf
-                        <button type="submit" class="text-sm font-medium text-red-600 hover:text-red-800">
-                            Log Out
-                        </button>
-                    </form>
-                @else
-                    <a href="{{ route('login') }}" class="text-sm font-medium text-gray-500 hover:text-gray-900 mr-4">Log in</a>
-                    <a href="{{ route('register') }}" class="inline-flex items-center px-4 py-2 bg-red-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-red-700 active:bg-red-900 focus:outline-none transition ease-in-out duration-150">
-                        Daftar
+                    <a href="{{ url('/admin') }}" class="ml-2 px-6 py-2.5 bg-slate-900 text-white rounded-full text-xs font-bold hover:bg-slate-800 transition shadow-lg shadow-slate-200">
+                        ADMIN PANEL
                     </a>
                 @endauth
             </div>
-            
-            <div class="-mr-2 flex items-center sm:hidden">
-                <button onclick="document.getElementById('mobile-menu').classList.toggle('hidden')" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none transition duration-150 ease-in-out">
-                    <i class="fas fa-bars text-xl"></i>
+
+            <div class="flex items-center sm:hidden">
+                <button @click="mobileMenuOpen = !mobileMenuOpen" class="p-3 text-slate-600 hover:text-emerald-600 hover:bg-emerald-50 rounded-xl transition">
+                    <i class="fas fa-bars text-2xl"></i>
                 </button>
             </div>
         </div>
     </div>
 
-    <div id="mobile-menu" class="hidden sm:hidden bg-white border-t border-gray-100">
-        <div class="pt-2 pb-3 space-y-1">
-            <a href="{{ route('home') }}" class="block pl-3 pr-4 py-2 border-l-4 {{ request()->routeIs('home') ? 'border-red-500 text-red-700 bg-red-50' : 'border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800' }} text-base font-medium transition duration-150 ease-in-out">
-                Beranda
-            </a>
-            <a href="{{ route('content.index') }}" class="block pl-3 pr-4 py-2 border-l-4 {{ request()->routeIs('content.*') ? 'border-red-500 text-red-700 bg-red-50' : 'border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800' }} text-base font-medium transition duration-150 ease-in-out">
-                Pusat Belajar
-            </a>
+    <div x-show="mobileMenuOpen" 
+         @click.away="mobileMenuOpen = false"
+         x-transition
+         class="absolute top-24 left-0 w-full bg-white border-b border-gray-100 shadow-xl sm:hidden p-4 flex flex-col gap-2">
+        
+        <a href="{{ route('home') }}" class="block px-4 py-3 text-slate-600 font-bold hover:bg-emerald-50 rounded-xl transition">
+            Beranda
+        </a>
+        <div class="block px-4 py-3 text-emerald-600 font-bold bg-emerald-50 rounded-xl">
+            Pusat Belajar
         </div>
-        <div class="pt-4 pb-4 border-t border-gray-200">
-            @auth
-                <div class="px-4">
-                    <div class="font-medium text-base text-gray-800">{{ Auth::user()->name }}</div>
-                    <div class="font-medium text-sm text-gray-500">{{ Auth::user()->email }}</div>
-                </div>
-                <div class="mt-3 space-y-1">
-                    <a href="{{ url('/admin') }}" class="block px-4 py-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100">Dashboard</a>
-                    <form method="POST" action="{{ route('logout') }}">
-                        @csrf
-                        <button type="submit" class="block w-full text-left px-4 py-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100">
-                            Log Out
-                        </button>
-                    </form>
-                </div>
-            @else
-                <div class="px-4 flex gap-2">
-                    <a href="{{ route('login') }}" class="block w-full text-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">Log in</a>
-                    <a href="{{ route('register') }}" class="block w-full text-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700">Daftar</a>
-                </div>
-            @endauth
-        </div>
+        
+        @auth
+            <a href="{{ url('/admin') }}" class="block px-4 py-3 mt-2 bg-slate-900 text-white font-bold rounded-xl text-center">
+                Ke Dashboard Admin
+            </a>
+        @endauth
     </div>
 </nav>
+
+<script src="//unpkg.com/alpinejs" defer></script>

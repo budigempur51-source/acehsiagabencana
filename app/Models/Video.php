@@ -21,6 +21,14 @@ class Video extends Model
     ];
 
     /**
+     * PENTING: Agar Route Model Binding membaca SLUG, bukan ID.
+     */
+    public function getRouteKeyName()
+    {
+        return 'slug';
+    }
+
+    /**
      * Relasi: Video milik satu Topik.
      */
     public function topic(): BelongsTo

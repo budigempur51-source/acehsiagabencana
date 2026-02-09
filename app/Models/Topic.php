@@ -20,6 +20,15 @@ class Topic extends Model
     ];
 
     /**
+     * PENTING: Agar Route Model Binding membaca SLUG, bukan ID.
+     * Ini yang memperbaiki error 404 saat klik topik.
+     */
+    public function getRouteKeyName()
+    {
+        return 'slug';
+    }
+
+    /**
      * Relasi: Topik milik satu Kategori.
      */
     public function category(): BelongsTo

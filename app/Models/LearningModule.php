@@ -23,6 +23,14 @@ class LearningModule extends Model
     ];
 
     /**
+     * PENTING: Agar Route Model Binding membaca SLUG, bukan ID.
+     */
+    public function getRouteKeyName()
+    {
+        return 'slug';
+    }
+
+    /**
      * Relasi: Modul milik satu Topik.
      */
     public function topic(): BelongsTo

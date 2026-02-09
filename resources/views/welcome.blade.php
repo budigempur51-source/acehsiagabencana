@@ -14,7 +14,7 @@
     <style>
         body { font-family: 'Figtree', sans-serif; letter-spacing: -0.01em; }
 
-        /* --- 1. GLASSMORPHISM PREMIUM (Kaca) --- */
+        /* --- 1. GLASSMORPHISM PREMIUM --- */
         .glass-premium {
             background: rgba(255, 255, 255, 0.03);
             backdrop-filter: blur(20px);
@@ -68,12 +68,30 @@
             text-shadow: 0 2px 4px rgba(0,0,0,0.5);
         }
 
-        /* --- 4. VIDEO OVERLAY --- */
+        /* --- 4. VIDEO OVERLAY & PERFORMANCE --- */
         .vignette-master {
             position: absolute;
             inset: 0;
-            background: radial-gradient(circle at 50% 50%, rgba(2,6,23,0.4) 0%, rgba(2,6,23,0.95) 100%);
+            background: linear-gradient(to bottom, 
+                rgba(2, 6, 23, 0.4) 0%, 
+                rgba(2, 6, 23, 0.7) 50%, 
+                rgba(2, 6, 23, 0.95) 100%
+            );
             z-index: 2;
+        }
+
+        /* Prevent Layout Shift */
+        #bgVideo {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            min-width: 100%;
+            min-height: 100%;
+            width: auto;
+            height: auto;
+            transform: translate(-50%, -50%);
+            object-fit: cover;
+            filter: saturate(1.2) contrast(1.1);
         }
 
         /* --- 5. SLIDER ANIMATION --- */
@@ -95,7 +113,7 @@
         }
     </style>
 </head>
-<body class="antialiased bg-slate-50 text-slate-800 overflow-x-hidden selection:bg-emerald-500 selection:text-white">
+<body class="antialiased bg-slate-900 text-slate-800 overflow-x-hidden selection:bg-emerald-500 selection:text-white">
     
     <nav class="fixed w-full z-50 transition-all duration-500 py-4 lg:py-6 top-0" id="mainNav">
         <div class="max-w-7xl mx-auto px-6 lg:px-10">
@@ -122,8 +140,16 @@
     <section class="relative min-h-screen w-full flex items-center justify-center overflow-hidden bg-slate-900">
         <div class="absolute inset-0 z-0">
             <div class="vignette-master"></div>
-            <video id="bgVideo" autoplay muted loop playsinline class="w-full h-full object-cover opacity-60">
-                <source src="{{ asset('storage_videos/hero-bg.mp4') }}" type="video/mp4">
+            <video 
+                id="bgVideo" 
+                autoplay 
+                muted 
+                loop 
+                playsinline 
+                preload="auto"
+                class="opacity-60">
+                <source src="{{ asset('vidio/vidiowelkom.mp4') }}" type="video/mp4">
+                Your browser does not support the video tag.
             </video>
         </div>
 
@@ -149,7 +175,7 @@
                         <a href="{{ route('content.index') }}" class="btn-emerald-clean px-8 py-4 text-white text-sm md:text-lg font-black rounded-2xl w-full sm:w-auto text-center">
                             Mulai Belajar
                         </a>
-                        <a href="#materi" class="glass-premium px-8 py-4 text-white text-sm md:text-lg font-bold rounded-2xl hover:bg-white/10 transition-all border border-white/10 w-full sm:w-auto text-center">
+                        <a href="#tentang" class="glass-premium px-8 py-4 text-white text-sm md:text-lg font-bold rounded-2xl hover:bg-white/10 transition-all border border-white/10 w-full sm:w-auto text-center">
                             Lihat Materi
                         </a>
                     </div>
@@ -253,97 +279,6 @@
         </div>
     </section>
 
-    <div class="py-16 bg-white">
-        <div class="max-w-7xl mx-auto px-6 lg:px-10">
-            <div class="mb-12">
-                <h2 class="text-3xl font-black text-slate-900 uppercase tracking-tight">Video Pilihan</h2>
-                <p class="text-slate-500 mt-2">Tonton panduan visual agar lebih mudah dipahami.</p>
-            </div>
-
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                @foreach($featuredVideos as $video)
-                    <div class="group relative bg-white rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 border border-slate-100">
-                        <div class="relative aspect-video bg-slate-200 overflow-hidden">
-                            @php
-                                $thumbnail = null;
-                                if ($video->thumbnail) {
-                                    $thumbnail = \Illuminate\Support\Facades\Storage::url($video->thumbnail);
-                                } elseif ($video->url) {
-                                    $url = $video->url;
-                                    parse_str(parse_url($url, PHP_URL_QUERY), $params);
-                                    $youtubeId = $params['v'] ?? null;
-                                    if(!$youtubeId && strpos($url, 'youtu.be') !== false) {
-                                         $youtubeId = substr(parse_url($url, PHP_URL_PATH), 1);
-                                    }
-                                    if($youtubeId) {
-                                        $thumbnail = "https://img.youtube.com/vi/{$youtubeId}/mqdefault.jpg";
-                                    }
-                                }
-                            @endphp
-                            <img src="{{ $thumbnail ?? 'https://via.placeholder.com/640x360?text=Video+Edukasi' }}" 
-                                 class="w-full h-full object-cover transform group-hover:scale-105 transition duration-700" 
-                                 alt="{{ $video->title }}">
-                            
-                            <a href="{{ route('content.video', $video->slug) }}" class="absolute inset-0 flex items-center justify-center bg-black/30 group-hover:bg-black/50 transition-all">
-                                <div class="w-14 h-14 bg-white/90 rounded-full flex items-center justify-center shadow-lg transform scale-90 group-hover:scale-110 transition duration-300">
-                                    <i class="fas fa-play text-emerald-600 text-xl ml-1"></i>
-                                </div>
-                            </a>
-                        </div>
-                        <div class="p-6">
-                            <span class="inline-block px-3 py-1 bg-emerald-50 text-emerald-700 text-xs font-bold rounded-full mb-3">
-                                {{ $video->topic->category->name ?? 'Edukasi' }}
-                            </span>
-                            <h3 class="text-lg font-bold text-slate-900 leading-snug hover:text-emerald-600 transition line-clamp-2">
-                                <a href="{{ route('content.video', $video->slug) }}">{{ $video->title }}</a>
-                            </h3>
-                        </div>
-                    </div>
-                @endforeach
-            </div>
-        </div>
-    </div>
-
-    @if(isset($featuredModules) && $featuredModules->count() > 0)
-    <div class="py-16 bg-slate-50 border-t border-slate-200">
-        <div class="max-w-7xl mx-auto px-6 lg:px-10">
-            <div class="text-center mb-12">
-                <h2 class="text-3xl font-black text-slate-900 uppercase tracking-tight">Buku Saku</h2>
-                <p class="text-slate-500 mt-2">Unduh panduan resmi untuk dibaca kapan saja.</p>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                @foreach($featuredModules as $module)
-                    <div class="flex bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition border border-slate-100 group">
-                        <div class="w-1/3 bg-slate-200 relative">
-                             @if($module->cover_image)
-                                <img src="{{ \Illuminate\Support\Facades\Storage::url($module->cover_image) }}" class="absolute inset-0 w-full h-full object-cover grayscale group-hover:grayscale-0 transition duration-500">
-                             @else
-                                <div class="absolute inset-0 flex items-center justify-center bg-emerald-50 text-emerald-400">
-                                    <i class="fas fa-book text-3xl"></i>
-                                </div>
-                             @endif
-                        </div>
-                        <div class="w-2/3 p-5 flex flex-col justify-between">
-                            <div>
-                                <h4 class="font-bold text-slate-900 leading-snug group-hover:text-emerald-600 transition line-clamp-2">
-                                    <a href="{{ route('content.module', $module->slug) }}">{{ $module->title }}</a>
-                                </h4>
-                                <p class="text-xs text-slate-500 mt-1">{{ $module->topic->name }}</p>
-                            </div>
-                            <div class="mt-4">
-                                <a href="{{ route('content.module', $module->slug) }}" class="text-sm font-bold text-emerald-600 hover:text-emerald-800 flex items-center">
-                                    Baca Sekarang <i class="fas fa-chevron-right ml-1 text-xs"></i>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                @endforeach
-            </div>
-        </div>
-    </div>
-    @endif
-
     <footer class="py-16 bg-white border-t border-slate-100 text-center">
         <div class="max-w-7xl mx-auto px-6">
             <img src="{{ asset('avatar/logoweb.png') }}" onerror="this.style.display='none'" alt="Logo" class="h-10 md:h-16 w-auto mx-auto mb-8 grayscale opacity-30 hover:opacity-100 transition-all duration-700 cursor-pointer">
@@ -372,12 +307,11 @@
             }
         });
 
-        // --- 2. Slider (Otomatis Stop di HP karena hidden) ---
+        // --- 2. Slider Desktop Logic ---
         let current = 0;
         const items = document.querySelectorAll('.slide-item');
         
         function rotate() {
-            // Cek apakah slider visible (Desktop only)
             if(items.length > 0 && window.innerWidth >= 1024) { 
                 items[current].classList.remove('slide-active');
                 current = (current + 1) % items.length;
@@ -386,22 +320,31 @@
         }
         setInterval(rotate, 5000);
 
-        // --- 3. iOS Video Autoplay Fix ---
-        document.addEventListener('DOMContentLoaded', () => {
-            const video = document.getElementById('bgVideo');
-            const forcePlay = () => {
-                if (video && video.paused) {
-                    video.play().then(() => removeListeners()).catch(e => console.log("Waiting interaction..."));
-                }
-            };
-            const removeListeners = () => {
-                document.removeEventListener('touchstart', forcePlay);
-                document.removeEventListener('click', forcePlay);
-            };
-            forcePlay();
-            document.addEventListener('touchstart', forcePlay, { passive: true });
-            document.addEventListener('click', forcePlay);
-        });
+        // --- 3. THE "MAGIC" AUTOPLAY FIX (FOR IPHONE & ALL DEVICES) ---
+        // Penjelasan: Browser modern melarang autoplay jika tidak berinteraksi. 
+        // Script ini menangkap interaksi pertama (klik/sentuh) di mana saja untuk memulai video.
+        
+        const video = document.getElementById('bgVideo');
+
+        function playVideo() {
+            if (video) {
+                video.play().then(() => {
+                    console.log("Video started successfully");
+                    // Jika sukses jalan, hapus listener agar tidak boros resource
+                    document.removeEventListener('click', playVideo);
+                    document.removeEventListener('touchstart', playVideo);
+                }).catch(error => {
+                    console.log("Playback failed, waiting for user interaction.");
+                });
+            }
+        }
+
+        // Coba jalan otomatis saat load
+        window.addEventListener('load', playVideo);
+        
+        // Paksa jalan saat ada sentuhan pertama di layar (Sangat ampuh di iPhone)
+        document.addEventListener('click', playVideo);
+        document.addEventListener('touchstart', playVideo);
     </script>
 </body>
 </html>
