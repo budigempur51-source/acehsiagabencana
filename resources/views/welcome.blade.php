@@ -16,71 +16,73 @@
 
         /* --- 1. GLASSMORPHISM PREMIUM --- */
         .glass-premium {
-            background: rgba(255, 255, 255, 0.03);
+            background: rgba(15, 23, 42, 0.6); /* Darker base for better contrast */
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
         }
 
         .glass-card {
-            background: rgba(255, 255, 255, 0.7);
+            background: rgba(255, 255, 255, 0.8);
             backdrop-filter: blur(15px);
             -webkit-backdrop-filter: blur(15px);
-            border: 1px solid rgba(255, 255, 255, 0.4);
-            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .glass-card:hover {
-            background: rgba(255, 255, 255, 0.9);
-            transform: translateY(-5px);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            background: rgba(255, 255, 255, 0.95);
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+            border-color: rgba(16, 185, 129, 0.3);
         }
 
         /* --- 2. BUTTON GLOW --- */
         .btn-emerald-clean {
             background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-            box-shadow: 0 0 20px rgba(16, 185, 129, 0.3), inset 0 1px 0 rgba(255,255,255,0.2);
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3), inset 0 1px 0 rgba(255,255,255,0.2);
             border: 1px solid rgba(16, 185, 129, 0.2);
-            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
         }
 
         .btn-emerald-clean:hover {
             transform: translateY(-2px);
-            box-shadow: 0 15px 35px -5px rgba(16, 185, 129, 0.5);
+            box-shadow: 0 10px 25px -5px rgba(16, 185, 129, 0.5);
             filter: brightness(1.1);
+        }
+
+        .btn-emerald-clean:active {
+            transform: translateY(0);
         }
 
         /* --- 3. TYPOGRAPHY --- */
         .hero-title {
-            font-size: clamp(2.5rem, 7vw, 6rem);
-            line-height: 1.1; 
-            letter-spacing: -0.04em;
+            font-size: clamp(2.5rem, 6vw, 5rem); /* Adjusted for better mobile fit */
+            line-height: 1.05; 
+            letter-spacing: -0.03em;
             font-weight: 900;
             text-shadow: 0 10px 40px rgba(0,0,0,0.4);
         }
         
         @media (min-width: 1024px) {
-            .hero-title { line-height: 0.9; }
+            .hero-title { line-height: 0.95; }
         }
 
-        .text-shadow-sm {
-            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
-        }
-
-        /* --- 4. VIDEO OVERLAY & PERFORMANCE --- */
+        /* --- 4. VIDEO & BACKGROUND --- */
         .vignette-master {
             position: absolute;
             inset: 0;
             background: linear-gradient(to bottom, 
-                rgba(2, 6, 23, 0.4) 0%, 
-                rgba(2, 6, 23, 0.7) 50%, 
-                rgba(2, 6, 23, 0.95) 100%
+                rgba(2, 6, 23, 0.5) 0%, 
+                rgba(2, 6, 23, 0.7) 40%, 
+                rgba(2, 6, 23, 1) 100%
             );
             z-index: 2;
         }
 
-        /* Prevent Layout Shift */
         #bgVideo {
             position: absolute;
             top: 50%;
@@ -91,7 +93,7 @@
             height: auto;
             transform: translate(-50%, -50%);
             object-fit: cover;
-            filter: saturate(1.2) contrast(1.1);
+            filter: saturate(1.1) brightness(0.8);
         }
 
         /* --- 5. SLIDER ANIMATION --- */
@@ -102,8 +104,9 @@
             align-items: center;
             justify-content: center;
             opacity: 0;
-            transition: all 1.2s ease-in-out;
-            transform: translateX(30px) scale(0.95);
+            transition: all 1s ease-in-out;
+            transform: translateX(50px) scale(0.9);
+            pointer-events: none;
         }
 
         .slide-active {
@@ -111,26 +114,47 @@
             transform: translateX(0) scale(1);
             z-index: 10;
         }
+
+        /* Utility Helpers */
+        .text-shadow-sm { text-shadow: 0 2px 4px rgba(0,0,0,0.3); }
     </style>
 </head>
 <body class="antialiased bg-slate-900 text-slate-800 overflow-x-hidden selection:bg-emerald-500 selection:text-white">
     
-    <nav class="fixed w-full z-50 transition-all duration-500 py-4 lg:py-6 top-0" id="mainNav">
-        <div class="max-w-7xl mx-auto px-6 lg:px-10">
+    <nav class="fixed w-full z-50 transition-all duration-300 py-4 top-0" id="mainNav">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8">
             <div class="flex justify-between items-center">
-                <div class="flex items-center space-x-3 lg:space-x-6">
-                    <img src="{{ asset('avatar/logoweb.png') }}" onerror="this.src='https://via.placeholder.com/150?text=LOGO'" alt="Logo" class="h-10 md:h-16 lg:h-20 w-auto drop-shadow-[0_0_15px_rgba(16,185,129,0.4)]">
-                    <div class="hidden sm:block border-l border-white/20 pl-4 md:pl-6">
-                        <h2 class="text-sm md:text-2xl font-black uppercase tracking-tighter text-shadow-sm text-white">SiagaBencana</h2>
-                        <p class="text-[8px] md:text-[9px] font-bold text-emerald-400 uppercase tracking-[0.4em] text-shadow-sm">Aceh Digilitera</p>
+                
+                <a href="/" class="flex items-center gap-3 group">
+                    <div class="relative flex items-center justify-center">
+                        <img src="{{ asset('avatar/logoweb.png') }}" 
+                             alt="Logo" 
+                             class="h-10 md:h-12 lg:h-14 w-auto object-contain transition-transform group-hover:scale-105"
+                             onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden');">
+                        
+                        <div class="hidden h-10 w-10 md:h-12 md:w-12 lg:h-14 lg:w-14 rounded-full bg-emerald-600 flex items-center justify-center text-white shadow-lg shadow-emerald-500/40 animate-pulse-once">
+                            <i class="fas fa-shield-halved text-lg md:text-xl"></i>
+                        </div>
                     </div>
-                </div>
 
-                <div class="flex items-center space-x-4 lg:space-x-8">
-                    <a href="{{ route('content.index') }}" class="text-xs md:text-sm font-bold text-white/90 hover:text-emerald-400 transition text-shadow-sm">Pusat Belajar</a>
+                    <div class="flex flex-col justify-center">
+                        <h2 class="text-lg md:text-xl font-black uppercase tracking-tight text-white leading-none">
+                            Siaga<span class="text-emerald-400">Bencana</span>
+                        </h2>
+                        <p class="text-[0.6rem] md:text-[0.65rem] font-bold text-slate-400 uppercase tracking-[0.2em] leading-tight mt-1">
+                            Aceh Digilitera
+                        </p>
+                    </div>
+                </a>
+
+                <div class="flex items-center gap-4 md:gap-6">
+                    <a href="{{ route('content.index') }}" class="hidden md:block text-sm font-bold text-slate-300 hover:text-white transition-colors duration-300">
+                        Pusat Belajar
+                    </a>
                     
-                    <a href="/admin" class="btn-emerald-clean px-5 py-2 md:px-6 md:py-2.5 text-white text-[10px] md:text-xs font-black rounded-full shadow-2xl flex items-center gap-2">
-                        <i class="fas fa-user-shield"></i> Admin Area
+                    <a href="/admin" class="btn-emerald-clean px-4 py-2 md:px-5 md:py-2.5 text-white text-xs font-bold rounded-full shadow-lg flex items-center gap-2 group">
+                        <i class="fas fa-user-shield group-hover:rotate-12 transition-transform"></i> 
+                        <span>Admin</span>
                     </a>
                 </div>
             </div>
@@ -138,7 +162,7 @@
     </nav>
 
     <section class="relative min-h-screen w-full flex items-center justify-center overflow-hidden bg-slate-900">
-        <div class="absolute inset-0 z-0">
+        <div class="absolute inset-0 z-0 bg-slate-900">
             <div class="vignette-master"></div>
             <video 
                 id="bgVideo" 
@@ -147,204 +171,235 @@
                 loop 
                 playsinline 
                 preload="auto"
-                class="opacity-60">
+                poster="{{ asset('avatar/video-poster.jpg') }}" 
+                class="opacity-70">
                 <source src="{{ asset('vidio/vidiowelkom.mp4') }}" type="video/mp4">
-                Your browser does not support the video tag.
-            </video>
+                </video>
         </div>
 
-        <div class="max-w-7xl mx-auto px-6 lg:px-10 relative z-10 w-full pt-24 lg:pt-0">
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8 relative z-10 w-full pt-20">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
                 
                 <div class="text-center lg:text-left order-1">
-                    <div class="inline-flex items-center space-x-3 px-4 py-1.5 rounded-full glass-premium border-white/10 text-emerald-400 text-[10px] font-black uppercase tracking-[0.3em] mb-6 md:mb-10 backdrop-blur-md">
-                        <span class="h-2 w-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_10px_#10b981]"></span>
+                    <div class="inline-flex items-center space-x-2 px-3 py-1.5 rounded-full glass-premium border border-white/10 text-emerald-400 text-[10px] font-bold uppercase tracking-widest mb-6 backdrop-blur-md shadow-lg">
+                        <span class="relative flex h-2 w-2">
+                          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                          <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                        </span>
                         <span>Literasi Digital Aceh</span>
                     </div>
                     
-                    <h1 class="hero-title text-white mb-6 leading-tight">
+                    <h1 class="hero-title text-white mb-6">
                         Budaya<br>
-                        <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400 drop-shadow-lg">Siaga.</span>
+                        <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400 filter drop-shadow-lg">
+                            Siaga.
+                        </span>
                     </h1>
                     
-                    <p class="text-base md:text-xl lg:text-2xl text-slate-200/90 leading-relaxed mb-10 max-w-lg mx-auto lg:mx-0 font-medium text-shadow-sm">
-                        Membangun ketangguhan masyarakat Aceh melalui <span class="text-white font-bold border-b-2 border-emerald-500/50">Edukasi Digital</span> berbasis kearifan lokal yang presisi.
+                    <p class="text-base md:text-lg lg:text-xl text-slate-300 leading-relaxed mb-8 max-w-lg mx-auto lg:mx-0 font-medium">
+                        Membangun ketangguhan masyarakat Aceh melalui <span class="text-white font-bold border-b border-emerald-500">Edukasi Digital</span> berbasis kearifan lokal yang presisi dan mudah diakses.
                     </p>
                     
                     <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                        <a href="{{ route('content.index') }}" class="btn-emerald-clean px-8 py-4 text-white text-sm md:text-lg font-black rounded-2xl w-full sm:w-auto text-center">
+                        <a href="{{ route('content.index') }}" class="btn-emerald-clean px-8 py-4 text-white text-sm font-black rounded-xl w-full sm:w-auto text-center shadow-emerald-500/20 shadow-xl">
                             Mulai Belajar
                         </a>
-                        <a href="#tentang" class="glass-premium px-8 py-4 text-white text-sm md:text-lg font-bold rounded-2xl hover:bg-white/10 transition-all border border-white/10 w-full sm:w-auto text-center">
-                            Lihat Materi
+                        <a href="#tentang" class="glass-premium px-8 py-4 text-white text-sm font-bold rounded-xl hover:bg-white/10 transition-all border border-white/10 w-full sm:w-auto text-center">
+                            Pelajari Lebih Lanjut
                         </a>
                     </div>
                 </div>
 
-                <div class="hidden lg:flex relative h-[600px] lg:h-[700px] w-full pointer-events-none order-2 items-center justify-center">
-                    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] bg-emerald-500/20 rounded-full blur-[100px] animate-pulse"></div>
+                <div class="hidden lg:flex relative h-[600px] w-full pointer-events-none order-2 items-center justify-center">
+                    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] bg-emerald-500/10 rounded-full blur-[80px]"></div>
 
                     <div class="slide-item slide-active">
-                        <img src="{{ asset('avatar/slide1.png') }}" class="max-h-full w-auto object-contain drop-shadow-[0_20px_50px_rgba(0,0,0,0.6)]">
+                        <img src="{{ asset('avatar/foto/slide1.png') }}" onerror="this.style.display='none'" class="max-h-full w-auto object-contain drop-shadow-2xl">
                     </div>
                     <div class="slide-item">
-                        <img src="{{ asset('avatar/slide2.png') }}" class="max-h-full w-auto object-contain drop-shadow-[0_20px_50px_rgba(0,0,0,0.6)]">
+                        <img src="{{ asset('avatar/foto/slide2.png') }}" onerror="this.style.display='none'" class="max-h-full w-auto object-contain drop-shadow-2xl">
                     </div>
                     <div class="slide-item">
-                        <img src="{{ asset('avatar/slide3.png') }}" class="max-h-full w-auto object-contain drop-shadow-[0_20px_50px_rgba(0,0,0,0.6)]">
+                        <img src="{{ asset('avatar/foto/slide3.png') }}" onerror="this.style.display='none'" class="max-h-full w-auto object-contain drop-shadow-2xl">
                     </div>
                     <div class="slide-item">
-                        <img src="{{ asset('avatar/slide4.png') }}" class="max-h-full w-auto object-contain drop-shadow-[0_20px_50px_rgba(0,0,0,0.6)]">
+                        <img src="{{ asset('avatar/foto/slide4.png') }}" onerror="this.style.display='none'" class="max-h-full w-auto object-contain drop-shadow-2xl">
                     </div>
                 </div>
             </div>
         </div>
         
-        <div class="absolute bottom-10 left-1/2 transform -translate-x-1/2 animate-bounce hidden lg:block z-20">
-            <a href="#tentang" class="text-white/50 hover:text-white transition">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path></svg>
+        <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce hidden lg:block z-20">
+            <a href="#tentang" class="text-white/30 hover:text-white transition p-2">
+                <i class="fas fa-chevron-down text-xl"></i>
             </a>
         </div>
     </section>
 
-    <section id="tentang" class="py-20 md:py-32 bg-white text-slate-950 relative z-30 rounded-t-[2.5rem] md:rounded-t-[5rem] -mt-10 lg:-mt-20 shadow-[0_-20px_60px_rgba(0,0,0,0.5)]">
-        <div class="max-w-7xl mx-auto px-6 lg:px-10">
+    <section id="tentang" class="py-20 md:py-28 bg-slate-50 relative z-30 rounded-t-[3rem] -mt-16 shadow-[0_-20px_60px_rgba(0,0,0,0.3)]">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8">
             <div class="flex flex-col lg:flex-row justify-between items-end mb-16 gap-6">
-                <div class="max-w-3xl text-center lg:text-left mx-auto lg:mx-0">
-                    <h2 class="text-4xl md:text-6xl lg:text-7xl font-black tracking-tighter leading-[0.9] mb-6 uppercase">
-                        Fokus Utama<br><span class="text-emerald-600">Literasi Kami.</span>
+                <div class="max-w-2xl text-center lg:text-left mx-auto lg:mx-0">
+                    <h2 class="text-4xl md:text-5xl font-black text-slate-900 tracking-tight mb-4">
+                        Fokus Utama <span class="text-emerald-600">Literasi.</span>
                     </h2>
-                    <p class="text-lg md:text-2xl text-slate-500 font-light max-w-xl mx-auto lg:mx-0">Strategi tepat sasaran untuk mewujudkan Aceh yang lebih tangguh menghadapi bencana.</p>
+                    <p class="text-lg text-slate-500 font-light leading-relaxed">
+                        Strategi komprehensif untuk mewujudkan Aceh yang tangguh bencana.
+                    </p>
                 </div>
-                <div class="hidden lg:block h-2 w-32 bg-emerald-500 rounded-full mb-4"></div>
+                <div class="hidden lg:block h-1.5 w-24 bg-emerald-500 rounded-full mb-4"></div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
-                <div class="glass-card p-8 md:p-12 rounded-[2rem] border border-slate-100 group">
-                    <div class="w-16 h-16 bg-emerald-500 text-white rounded-3xl flex items-center justify-center mb-6 shadow-lg shadow-emerald-500/30 group-hover:rotate-6 transition-transform">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
+                <div class="glass-card p-8 rounded-[2rem] group hover:bg-white">
+                    <div class="w-14 h-14 bg-emerald-100 text-emerald-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
                         <i class="fas fa-laptop-code text-2xl"></i>
                     </div>
-                    <h3 class="text-2xl font-black mb-3 tracking-tight text-slate-800">Edukasi Digital</h3>
-                    <p class="text-base text-slate-500 leading-relaxed">Modul pembelajaran berbasis video dan interaksi untuk semua usia, mudah diakses di mana saja.</p>
+                    <h3 class="text-xl font-bold mb-3 text-slate-800">Edukasi Digital</h3>
+                    <p class="text-sm text-slate-500 leading-relaxed">
+                        Akses materi pembelajaran interaktif kapan saja dan di mana saja.
+                    </p>
                 </div>
 
-                <div class="glass-card p-8 md:p-12 rounded-[2rem] border border-slate-100 group">
-                    <div class="w-16 h-16 bg-blue-600 text-white rounded-3xl flex items-center justify-center mb-6 shadow-lg shadow-blue-500/30 group-hover:rotate-6 transition-transform">
+                <div class="glass-card p-8 rounded-[2rem] group hover:bg-white">
+                    <div class="w-14 h-14 bg-blue-100 text-blue-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
                         <i class="fas fa-mosque text-2xl"></i>
                     </div>
-                    <h3 class="text-2xl font-black mb-3 tracking-tight text-slate-800">Kearifan Lokal</h3>
-                    <p class="text-base text-slate-500 leading-relaxed">Penyelamatan aset budaya dan pendekatan mitigasi berbasis nilai-nilai ke-Aceh-an.</p>
+                    <h3 class="text-xl font-bold mb-3 text-slate-800">Kearifan Lokal</h3>
+                    <p class="text-sm text-slate-500 leading-relaxed">
+                        Pendekatan mitigasi yang menghormati nilai budaya dan adat Aceh.
+                    </p>
                 </div>
 
-                <div class="glass-card p-8 md:p-12 rounded-[2rem] border border-slate-100 group">
-                    <div class="w-16 h-16 bg-rose-600 text-white rounded-3xl flex items-center justify-center mb-6 shadow-lg shadow-rose-500/30 group-hover:rotate-6 transition-transform">
-                        <i class="fas fa-hands-helping text-2xl"></i>
+                <div class="glass-card p-8 rounded-[2rem] group hover:bg-white">
+                    <div class="w-14 h-14 bg-rose-100 text-rose-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                        <i class="fas fa-bolt text-2xl"></i>
                     </div>
-                    <h3 class="text-2xl font-black mb-3 tracking-tight text-slate-800">Cepat Tanggap</h3>
-                    <p class="text-base text-slate-500 leading-relaxed">Materi praktis yang mempersiapkan Anda bertindak cepat dan tepat saat sirine berbunyi.</p>
+                    <h3 class="text-xl font-bold mb-3 text-slate-800">Respon Cepat</h3>
+                    <p class="text-sm text-slate-500 leading-relaxed">
+                        Panduan praktis untuk tindakan cepat saat detik-detik krusial.
+                    </p>
                 </div>
             </div>
         </div>
     </section>
 
-    <section id="materi" class="py-16 bg-slate-50">
-        <div class="max-w-7xl mx-auto px-6 lg:px-10">
-            <div class="flex flex-col md:flex-row justify-between items-end mb-12">
-                <div>
-                    <h2 class="text-3xl font-black text-slate-900 uppercase tracking-tight">Pilih Kategori</h2>
-                    <p class="text-slate-500 mt-2">Pelajari mitigasi berdasarkan jenis ancaman.</p>
-                </div>
-                <a href="{{ route('content.index') }}" class="text-emerald-600 font-bold hover:text-emerald-700 mt-4 md:mt-0">Lihat Semua &rarr;</a>
+    <section id="materi" class="py-16 bg-white border-t border-slate-100">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8">
+            <div class="flex items-center justify-between mb-10">
+                <h2 class="text-2xl md:text-3xl font-black text-slate-900 tracking-tight">Kategori Materi</h2>
+                <a href="{{ route('content.index') }}" class="text-sm font-bold text-emerald-600 hover:text-emerald-700 hover:underline">
+                    Lihat Semua <i class="fas fa-arrow-right ml-1"></i>
+                </a>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                @foreach($categories as $category)
-                    <a href="{{ route('content.topic', ['category' => $category->slug]) }}" class="group relative bg-white p-6 rounded-3xl shadow-sm hover:shadow-xl transition-all duration-300 border border-slate-100 hover:-translate-y-1">
-                        <div class="flex items-center justify-center h-14 w-14 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white mb-6 group-hover:scale-110 transition-transform shadow-lg shadow-emerald-200">
-                            @if($category->icon)
-                                <img src="{{ \Illuminate\Support\Facades\Storage::url($category->icon) }}" class="h-8 w-8 object-contain filter brightness-0 invert">
-                            @else
-                                <i class="fas fa-shield-alt text-2xl"></i>
-                            @endif
-                        </div>
-                        <h3 class="text-xl font-bold text-slate-900 group-hover:text-emerald-600 transition">
-                            {{ $category->name }}
-                        </h3>
-                        <p class="mt-3 text-sm text-slate-500 line-clamp-2">
-                            {{ $category->description ?? 'Panduan lengkap keselamatan dan mitigasi.' }}
-                        </p>
-                    </a>
-                @endforeach
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+                @if(isset($categories) && count($categories) > 0)
+                    @foreach($categories as $category)
+                        <a href="{{ route('content.topic', ['category' => $category->slug]) }}" class="group relative bg-slate-50 p-6 rounded-3xl border border-slate-100 hover:border-emerald-200 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+                            <div class="flex items-center justify-center h-12 w-12 rounded-xl bg-white text-emerald-600 mb-4 shadow-sm group-hover:bg-emerald-600 group-hover:text-white transition-colors">
+                                @if($category->icon)
+                                    <img src="{{ \Illuminate\Support\Facades\Storage::url($category->icon) }}" class="h-6 w-6 object-contain" onerror="this.style.display='none'; this.nextElementSibling.style.display='block'">
+                                    <i class="fas fa-shield-alt text-lg hidden"></i>
+                                @else
+                                    <i class="fas fa-shield-alt text-lg"></i>
+                                @endif
+                            </div>
+                            <h3 class="text-lg font-bold text-slate-900 group-hover:text-emerald-700 transition-colors">
+                                {{ $category->name }}
+                            </h3>
+                            <p class="mt-2 text-xs text-slate-500 line-clamp-2">
+                                {{ $category->description ?? 'Pelajari panduan mitigasi lengkap di sini.' }}
+                            </p>
+                        </a>
+                    @endforeach
+                @else
+                    <div class="col-span-full text-center py-10 text-slate-400 text-sm">
+                        <i class="fas fa-folder-open mb-2 text-2xl"></i>
+                        <p>Belum ada kategori materi.</p>
+                    </div>
+                @endif
             </div>
         </div>
     </section>
 
-    <footer class="py-16 bg-white border-t border-slate-100 text-center">
-        <div class="max-w-7xl mx-auto px-6">
-            <img src="{{ asset('avatar/logoweb.png') }}" onerror="this.style.display='none'" alt="Logo" class="h-10 md:h-16 w-auto mx-auto mb-8 grayscale opacity-30 hover:opacity-100 transition-all duration-700 cursor-pointer">
-            <div class="flex flex-wrap justify-center gap-6 md:gap-10 mb-8 text-xs md:text-sm font-bold text-slate-400 uppercase tracking-widest">
-                <a href="#" class="hover:text-emerald-500 transition">Beranda</a>
-                <a href="#tentang" class="hover:text-emerald-500 transition">Tentang</a>
-                <a href="{{ route('content.index') }}" class="hover:text-emerald-500 transition">Materi</a>
-                <a href="/admin" class="hover:text-emerald-500 transition">Admin</a>
+    <footer class="py-12 bg-white border-t border-slate-100">
+        <div class="max-w-7xl mx-auto px-6 text-center">
+            <div class="flex justify-center mb-6">
+                <img src="{{ asset('avatar/foto/logoweb.png') }}" 
+                     alt="Logo Footer" 
+                     class="h-10 w-auto opacity-40 hover:opacity-100 transition-opacity"
+                     onerror="this.style.display='none'; document.getElementById('footerIcon').classList.remove('hidden');">
+                
+                <div id="footerIcon" class="hidden text-slate-300 text-3xl">
+                    <i class="fas fa-shield-cat"></i>
+                </div>
             </div>
-            <p class="text-slate-400 text-[10px] md:text-xs font-bold uppercase tracking-[0.3em]">
-                &copy; {{ date('Y') }} {{ config('app.name') }}. Program Mahasiswa Berdampak Aceh.
+
+            <div class="flex flex-wrap justify-center gap-6 mb-8 text-xs font-bold text-slate-400 uppercase tracking-widest">
+                <a href="#" class="hover:text-emerald-600 transition">Home</a>
+                <a href="#tentang" class="hover:text-emerald-600 transition">Tentang</a>
+                <a href="{{ route('content.index') }}" class="hover:text-emerald-600 transition">Materi</a>
+                <a href="/admin" class="hover:text-emerald-600 transition">Login Admin</a>
+            </div>
+            
+            <p class="text-slate-400 text-[10px] font-bold uppercase tracking-widest">
+                &copy; {{ date('Y') }} {{ config('app.name') }}. Built with <i class="fas fa-heart text-red-400 mx-1"></i> for Aceh.
             </p>
         </div>
     </footer>
 
     <script>
-        // --- 1. Navbar Scroll Styling ---
-        const nav = document.getElementById('mainNav');
-        window.addEventListener('scroll', () => {
-            if (window.scrollY > 50) {
-                nav.classList.add('glass-premium', 'py-3', 'shadow-2xl');
-                nav.classList.remove('py-4', 'lg:py-6');
-            } else {
-                nav.classList.remove('glass-premium', 'py-3', 'shadow-2xl');
-                nav.classList.add('py-4', 'lg:py-6');
+        document.addEventListener('DOMContentLoaded', () => {
+            // 1. Navbar Logic
+            const nav = document.getElementById('mainNav');
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 20) {
+                    nav.classList.add('glass-premium', 'shadow-lg');
+                    nav.classList.remove('py-4');
+                    nav.classList.add('py-2');
+                } else {
+                    nav.classList.remove('glass-premium', 'shadow-lg', 'py-2');
+                    nav.classList.add('py-4');
+                }
+            });
+
+            // 2. Slider Logic (Desktop Only)
+            const items = document.querySelectorAll('.slide-item');
+            let current = 0;
+            if(items.length > 0) {
+                setInterval(() => {
+                    if (window.innerWidth >= 1024) {
+                        items[current].classList.remove('slide-active');
+                        current = (current + 1) % items.length;
+                        items[current].classList.add('slide-active');
+                    }
+                }, 4000);
             }
+
+            // 3. Robust Video Autoplay
+            const video = document.getElementById('bgVideo');
+            const playAttempt = setInterval(() => {
+                if(video) {
+                    video.play()
+                        .then(() => {
+                            clearInterval(playAttempt);
+                        })
+                        .catch(() => {
+                            // Waiting for interaction
+                        });
+                }
+            }, 3000);
+
+            // Unlock audio/video context on first interaction
+            const unlock = () => {
+                if(video) video.play();
+                document.removeEventListener('click', unlock);
+                document.removeEventListener('touchstart', unlock);
+            };
+            document.addEventListener('click', unlock);
+            document.addEventListener('touchstart', unlock);
         });
-
-        // --- 2. Slider Desktop Logic ---
-        let current = 0;
-        const items = document.querySelectorAll('.slide-item');
-        
-        function rotate() {
-            if(items.length > 0 && window.innerWidth >= 1024) { 
-                items[current].classList.remove('slide-active');
-                current = (current + 1) % items.length;
-                items[current].classList.add('slide-active');
-            }
-        }
-        setInterval(rotate, 5000);
-
-        // --- 3. THE "MAGIC" AUTOPLAY FIX (FOR IPHONE & ALL DEVICES) ---
-        // Penjelasan: Browser modern melarang autoplay jika tidak berinteraksi. 
-        // Script ini menangkap interaksi pertama (klik/sentuh) di mana saja untuk memulai video.
-        
-        const video = document.getElementById('bgVideo');
-
-        function playVideo() {
-            if (video) {
-                video.play().then(() => {
-                    console.log("Video started successfully");
-                    // Jika sukses jalan, hapus listener agar tidak boros resource
-                    document.removeEventListener('click', playVideo);
-                    document.removeEventListener('touchstart', playVideo);
-                }).catch(error => {
-                    console.log("Playback failed, waiting for user interaction.");
-                });
-            }
-        }
-
-        // Coba jalan otomatis saat load
-        window.addEventListener('load', playVideo);
-        
-        // Paksa jalan saat ada sentuhan pertama di layar (Sangat ampuh di iPhone)
-        document.addEventListener('click', playVideo);
-        document.addEventListener('touchstart', playVideo);
     </script>
 </body>
 </html>
